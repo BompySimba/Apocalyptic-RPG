@@ -11,6 +11,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     public Sprite itemSprite;
     public bool isFull;
     public string itemDescription;
+    public Sprite emptySprite;
+    [SerializeField] int maxItems;
 
     // ITEM SLOT
     [SerializeField] TMP_Text quantityText;
@@ -33,18 +35,43 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
         inventoryManager = GameObject.Find("Inventory").GetComponent<InventoryManager>();
     }
 
-    public void AddItem(string itemName, int quantity, Sprite itemSprite, string itemDescription)
+    public int AddItem(string itemName, int quantity, Sprite itemSprite, string itemDescription)
     {
-        this.itemName = itemName;
-        this.quantity = quantity;
-        this.itemSprite = itemSprite;
-        this.itemDescription = itemDescription;
-        isFull = true;
+        // Check if slot is full
+        if (isFull)
+        {
+            return quantity;
+        }
 
-        quantityText.text = quantity.ToString();
-        quantityText.gameObject.SetActive( true);
+        // Updaye NAME
+        this.itemName = itemName;
+
+        // Update IMAGE
+        this.itemSprite = itemSprite;
         itemImage.sprite = itemSprite;
         itemImage.gameObject.SetActive(true);
+
+        // Update DESCRIPTION
+        this.itemDescription = itemDescription;
+
+        // Update QUANTITY
+        this.quantity += quantity;
+        if(this.quantity >= maxItems)
+        {
+            // IF quantity is higher than max, set quantity to full
+            quantityText.text = maxItems.ToString();
+            quantityText.gameObject.SetActive(true);
+            isFull = true;
+
+            // Calculate leftovers
+            int extraItems = this.quantity - maxItems;
+            this.quantity = maxItems;
+            return extraItems;
+        }
+        quantityText.text = this.quantity.ToString();
+        quantityText.gameObject.SetActive(true);
+
+        return 0;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -67,6 +94,11 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
         descriptionNameText.text = itemName;
         descriptionText.text = itemDescription;
         descriptionImage.sprite = itemSprite;
+        
+        if(descriptionImage.sprite == null)
+        {
+            descriptionImage.sprite = emptySprite;
+        }
     }
 
     public void OnRightClick()
