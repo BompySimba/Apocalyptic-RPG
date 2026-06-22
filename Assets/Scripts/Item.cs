@@ -1,16 +1,26 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] string itemName;
+    [SerializeField] int quantity;
+    [SerializeField] Sprite itemSprite;
+    [TextArea] [SerializeField] string itemDescription;
+    
+    InventoryManager inventoryManager;
+
     void Start()
     {
-        
+        inventoryManager = GameObject.Find("Inventory").GetComponent<InventoryManager>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter(Collision collision)
     {
-        
+        if (collision.gameObject.tag == "Player")
+        {
+            inventoryManager.AddItem(itemName, quantity, itemSprite, itemDescription);
+            Destroy(gameObject);
+        }
     }
 }

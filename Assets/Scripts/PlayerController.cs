@@ -9,7 +9,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float runSpeed = 5.0f;
     [SerializeField] float rotationSpeed = 5.0f;
     [SerializeField] float jumpForce = 3f;
-    float currentSpeed; 
+    float currentSpeed;
+
+    bool isGrounded;
+    float groundCheckDistance = 0.2f;
+    [SerializeField] Transform groundCheckObj;
+    [SerializeField] LayerMask groundLayer;
 
     public void Move(InputAction.CallbackContext context)
     {
@@ -42,7 +47,10 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        if(context.performed && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
     }
 
     void Start()
@@ -53,6 +61,7 @@ public class PlayerController : MonoBehaviour
     
     private void FixedUpdate()
     {
+        isGrounded = Physics.CheckSphere(groundCheckObj.position, groundCheckDistance, groundLayer);
         rb.linearVelocity = (transform.forward * moveDir.z + transform.right * moveDir.x) * currentSpeed + Vector3.up * rb.linearVelocity.y;
     }
 }
