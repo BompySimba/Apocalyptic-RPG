@@ -16,6 +16,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform groundCheckObj;
     [SerializeField] LayerMask groundLayer;
 
+    public int maxHealth = 100;
+    public int currentHealth;
+    public HealthBar healthBar;
+
+    void Start()
+    {
+        currentSpeed = speed;
+        rb = GetComponent<Rigidbody>();
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
+    }
+
+    private void FixedUpdate()
+    {
+        isGrounded = Physics.CheckSphere(groundCheckObj.position, groundCheckDistance, groundLayer);
+        rb.linearVelocity = (transform.forward * moveDir.z + transform.right * moveDir.x) * currentSpeed + Vector3.up * rb.linearVelocity.y;
+    }
+
     public void Move(InputAction.CallbackContext context)
     {
         Vector2 movementInput = context.ReadValue<Vector2>();
@@ -53,15 +71,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Start()
+    public void TakeDamage(int damage)
     {
-        currentSpeed = speed;
-        rb = GetComponent<Rigidbody>();
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
     }
-    
-    private void FixedUpdate()
+
+    public void HealDamage(int damage)
     {
-        isGrounded = Physics.CheckSphere(groundCheckObj.position, groundCheckDistance, groundLayer);
-        rb.linearVelocity = (transform.forward * moveDir.z + transform.right * moveDir.x) * currentSpeed + Vector3.up * rb.linearVelocity.y;
+        currentHealth += damage;
+        if(currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        healthBar.SetHealth(currentHealth);
     }
 }

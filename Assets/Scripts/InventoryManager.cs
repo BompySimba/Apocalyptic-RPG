@@ -6,6 +6,8 @@ public class InventoryManager : MonoBehaviour
     public GameObject InventoryMenu;
     bool menuActivated;
     public ItemSlot[] itemSlot;
+     
+    public ItemSO[] itemSOs;
 
     public void OpenInventory(InputAction.CallbackContext context)
     {
@@ -23,6 +25,19 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public bool UseItem(string itemName)
+    {
+        for (int i = 0; i < itemSOs.Length; i++)
+        {
+            if (itemSOs[i].itemName == itemName)
+            {
+                bool isUsable = itemSOs[i].UseItem();
+                return isUsable;
+            }
+        }
+        return false;
+    }
+
     public int AddItem(string itemName, int quantity, Sprite itemSprite, string itemDescription)
     {
         for (int i = 0; i < itemSlot.Length; i++)
@@ -33,10 +48,11 @@ public class InventoryManager : MonoBehaviour
                 if(leftOver > 0)
                 {
                     leftOver = AddItem(itemName, leftOver, itemSprite, itemDescription);
-                    return leftOver;
                 }
+                return leftOver;
             }
         }
+
         return quantity;
     }
 

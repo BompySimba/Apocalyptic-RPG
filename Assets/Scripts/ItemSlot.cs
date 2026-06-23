@@ -88,6 +88,20 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
 
     public void OnLeftClick()
     {
+        if (isSelected)
+        {
+            bool isUsable = inventoryManager.UseItem(itemName);
+            if (isUsable)
+            {
+                this.quantity -= 1;
+                quantityText.text = this.quantity.ToString();
+                if (this.quantity <= 0)
+                {
+                    EmptySlot();
+                }
+            }
+        }
+
         inventoryManager.DeselectAllSlots();
         selectedShader.SetActive(true);
         isSelected = true;
@@ -99,6 +113,15 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
         {
             descriptionImage.sprite = emptySprite;
         }
+    }
+
+    void EmptySlot()
+    {
+        quantityText.gameObject.SetActive(false);
+        itemImage.gameObject.SetActive(false);
+        descriptionNameText.text = " ";
+        descriptionText.text = " ";
+        descriptionImage.sprite = emptySprite;
     }
 
     public void OnRightClick()
